@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Job;
+use App\Entity\User;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,4 +47,23 @@ class JobRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    /**
+     * @param int $userId
+     * @param DateTimeInterface $startDate
+     * @param DateTimeInterface $endDate
+     * @return array
+     */
+    public function findJobsByUserIdAndDateRange(int $userId, \DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        return $this->createQueryBuilder('j')
+            ->join('j.user', 'u')
+            ->where('u.id = :userId')
+            ->andWhere('j.startDate <= :endDate')
+            ->andWhere('j.endDate >= :startDate OR j.endDate IS NULL')
+            ->setParameter('userId', $userId)
+            ->setParameter('startDate', $startDate->format('Y-m-d'))
+            ->setParameter('endDate', $endDate->format('Y-m-d'))
+            ->getQuery()
+            ->getResult();
+    }
 }
