@@ -24,7 +24,9 @@ class JobType extends AbstractType
             ])
             ->add('user', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => function (User $user) {
+                    return $user->getFirstname() . ' ' . $user->getLastname();
+                },
             ])
         ;
     }
