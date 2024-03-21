@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as AcmeAssert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -23,7 +26,10 @@ class User
     private ?string $lastname = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $birthday = null;
+    #[Assert\NotBlank]
+    #[Assert\Date]
+    #[Assert\LessThanOrEqual("-150 years", message: "L\'âge maximum autorisé est de 150 ans")]
+    private ?\DateTimeInterface $dateOfBirth = null;
 
     #[ORM\OneToMany(targetEntity: Job::class, mappedBy: 'user')]
     private Collection $jobs;
@@ -64,12 +70,12 @@ class User
 
     public function getBirthday(): ?\DateTimeInterface
     {
-        return $this->birthday;
+        return $this->dateOfBirth;
     }
 
     public function setBirthday(\DateTimeInterface $birthday): static
     {
-        $this->birthday = $birthday;
+        $this->dateOfBirth = $birthday;
 
         return $this;
     }
