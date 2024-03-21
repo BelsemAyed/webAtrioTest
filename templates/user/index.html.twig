@@ -11,7 +11,8 @@
                 <th>Id</th>
                 <th>Firstname</th>
                 <th>Lastname</th>
-                <th>DateOfBirth</th>
+                <th>Age</th>
+                <th>Actual Job</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -21,7 +22,20 @@
                 <td>{{ user.id }}</td>
                 <td>{{ user.firstname }}</td>
                 <td>{{ user.lastname }}</td>
-                <td>{{ user.dateOfBirth ? user.dateOfBirth|date('Y-m-d') : '' }}</td>
+                <td>
+                    {% if user.dateOfBirth %}
+                        {{ 'now'|date('Y') - user.dateOfBirth|date('Y') }} years
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.jobs|length > 0 %}
+                        {{ user.jobs.last().getJobPosition() }} at {{ user.jobs.last().getCompanyName() }}
+                    {% else %}
+                        No job
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
                     <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
