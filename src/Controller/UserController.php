@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/user')]
+#[Route('/users')]
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
@@ -80,5 +80,16 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/company/{companyName}', name: 'user_by_company')]
+    public function getUsersByCompany(string $companyName, UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findByCompany($companyName);
+
+        return $this->render('user/index.html.twig', [
+            'users' => $users,
+            'companyName' => $companyName,
+        ]);
     }
 }

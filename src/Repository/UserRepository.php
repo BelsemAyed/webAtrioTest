@@ -45,4 +45,14 @@ class UserRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByCompany(string $companyName): array
+    {
+        return $this->createQueryBuilder('u')
+            ->join('u.jobs', 'j')
+            ->andWhere('j.companyName LIKE :companyName')
+            ->setParameter('companyName', '%'.$companyName.'%')
+            ->getQuery()
+            ->getResult();
+    }
 }
