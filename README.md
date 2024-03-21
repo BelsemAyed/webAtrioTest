@@ -71,6 +71,7 @@ Retrieve Employment History by Date Range
 ========
 Endpoint: GET /jobs/users/{userId}?startDate={startDate}&endDate={endDate}
 Description: Retrieves all employment history for an individual within a specified date range.
+![filter jobs by user and date range](https://github.com/BelsemAyed/webAtrioTest/assets/66927021/3f5851d1-84ec-4d62-b716-a50ea7be00f0)
 
 Application Structure
 ========
