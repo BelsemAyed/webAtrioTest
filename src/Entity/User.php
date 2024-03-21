@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator as AcmeAssert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -26,10 +26,7 @@ class User
     private ?string $lastname = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Assert\NotBlank]
-    #[Assert\Date]
-    #[Assert\LessThanOrEqual("-150 years", message: "L\'âge maximum autorisé est de 150 ans")]
-    private ?\DateTimeInterface $dateOfBirth = null;
+    private ?\DateTime $dateOfBirth = null;
 
     #[ORM\OneToMany(targetEntity: Job::class, mappedBy: 'user')]
     private Collection $jobs;
@@ -68,14 +65,14 @@ class User
         return $this;
     }
 
-    public function getBirthday(): ?\DateTimeInterface
+    public function getDateOfBirth(): ?\DateTimeInterface
     {
         return $this->dateOfBirth;
     }
 
-    public function setBirthday(\DateTimeInterface $birthday): static
+    public function setDateOfBirth(?\DateTimeInterface $dateOfBirth): self
     {
-        $this->dateOfBirth = $birthday;
+        $this->dateOfBirth = $dateOfBirth;
 
         return $this;
     }
@@ -108,5 +105,26 @@ class User
         }
 
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateAge(ExecutionContextInterface $context)
+    {
+        // Obtenez la date de naissance de l'objet User
+        $dateOfBirth = $this->getDateOfBirth();
+
+        if ($dateOfBirth === null) {
+            return;
+        }
+
+        // Calculez l'âge en années
+        $age = $dateOfBirth->diff(new \DateTime())->y;
+
+        // Vérifiez si l'âge est supérieur à 150 ans
+        if ($age > 150) {
+            $context->buildViolation("L'âge maximum autorisé est de 150 ans")
+                ->atPath('dateOfBirth')
+                ->addViolation();
+        }
     }
 }
